@@ -6,6 +6,7 @@ Our meter here uses the Heat Ratio Method, where it applies a heat pulse into th
 
 Currently we have designed flexible PCB probes, and we are testing our sap flow measurements in a tree against empirical water consumption measurements and a commercial sapflow probe.
 
+This branch controls the basestation which collects and stores data from multiple devices.
 
 ## Libraries required:
 - [SdFat](https://github.com/greiman/SdFat "SdFat")
@@ -18,3 +19,4 @@ Currently we have designed flexible PCB probes, and we are testing our sap flow 
 - [ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
 - [FeatherFault](https://github.com/OPEnSLab-OSU/FeatherFault)
 - [ASF core](https://github.com/adafruit/Adafruit_ASFcore.git) commit f6ffa8b
+- [Chart.js]()

@@ -1,0 +1,342 @@
+<!-- 
+Site Design
+	Use chart.js to graph database entries.  
+	- Have multiple tabs to show different trees?
+
+TO DO:
+	- Find tutorial on making website available on mobile?
+	- Use asynch requests to get data for chart?  Hook up chart to database? (how to get data)
+--!>
+
+<!DOCTYPE html>
+<html>
+<!--i>tems inside of style tags are CSS.  used to set formatting for the document-->
+	<style>
+h1 {
+	text-align: center;
+	color: white;
+}
+p {
+	text-align: center;
+	color: white;
+}
+button {
+	background-color: #D73F09;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding: 10px 15px;
+	margin-right: 5px;
+	text-align: center;
+	font-family: Arial, Times, serif; //higher values are closer to user
+}
+#status{
+	background-color: #D73F09;
+	border: none;
+	color: white;
+	cursor: pointer;
+	margin: 10px;
+	padding: 10px 15px;
+	text-align: center;
+	font-family: Arial, Times, serif; //higher values are closer to user
+}
+
+#mycanvas{
+	background: white;
+	padding: 0;
+	margin: auto;
+	display: block;
+		opacity: 0.4;
+}
+
+#graph_overlay {
+	position: absolute;
+	background: orange;
+	width: 99%;
+	height: 70%;
+	display: none;
+	padding: {
+		left: 100,
+		right: 100,
+		top: 1000,
+		bottom: 100
+	};
+	z-index: 2; //higher values are closer to user
+	//This is instantiated as the child of a div (inside that div), so its position
+	//is absolute relative to said div -  which owns the canvas with our graph
+	//NOTE: cannot have comments before or between other properties...
+}
+body {
+	//background-image: url("Man in the Moon 323.png");
+	//background-repeat: no-repeat;
+	//background-color: black;
+	background-position: center top;
+	text-align: center;
+}
+header {
+	background-color: black;
+	font-size: 20;
+	text-align: center;
+	padding-right: 8px;
+	margin-right: -8px;
+	padding-left: 100px;
+	margin-left: -100px;
+	font-family: Arial, Times, serif; //higher values are closer to user
+	font-weight: bold;
+}
+
+	</style>
+	<head>
+		<title>Sapflow Readings</title>
+	</head>
+
+	<script>
+	function getTestData(request) {
+		//this is called 4 times, once for each transisition
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				document.getElementById("displayed").innerHTML = this.responseText;
+			}
+		};
+		//this supposedly allows us to prevent cashed results from being used
+		//xhttp.open("GET", "ajax_test.txt?t=" + Math.random(), true);
+		if (request == 1) {
+			xhttp.open("GET", "ajax_test.txt", true);
+		}
+		xhttp.send();
+	}
+	</script>
+	
+	
+	<!--This standard call won't allow the transfer of an image.
+		some processing is necessary. HOWEVER, you can have a php
+		generated image through this call-->
+
+	<!--This section has interface and the section to be replaced-->
+	<header>
+		<h1>
+	SAPFLOW DATA	
+		</h1>
+	</header>
+	
+	<!--To pass actual data into a function, use single quotes-->
+	<!--<button type="button" onclick="turnoff_overlay('graph_overlay')">Tree 1</button>	
+	<button type="button" onclick="turnon_overlay('graph_overlay')">Tree 2</button>	-->
+	<button class="button" onclick="set_datatype('Sapflow');">Sapflow</button>	
+	<button class="button" onclick="set_datatype('maxtemp');">Max Heater Temp</button>	
+	<button class="button" onclick="set_datatype('temperature');">Temperature</button>	
+	<button class="button" onclick="set_tree('0');">Tree 0</button>	
+	<button class="button" onclick="set_tree('1');">Tree 1</button>	
+	<div id="status">  
+		Tree 1
+	</div>	
+	
+	<!--div simply defines a section in which you do stuff-->
+	<div id="overall" style="background-color: white">  
+		<h1>
+			<div id="displayed">  
+				SAPFLOW BABY
+			</div>	
+		</h1>
+	</div>	
+				<div id ="graph_base">
+					<div id=graph_overlay>  		
+					</div>
+					<canvas id="tree1" width=85% height=35%><canvas/>
+				</div>
+			<script src="Chart.js"></script>
+			<script>
+				var ctx = document.getElementById('tree1').getContext('2d');
+				var myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					datasets: [{
+						label: 'sapflow',
+						backgroundColor: "rgba(215,63,9,0.5)",
+						data: []
+						//trying to figure out where this goes
+						//lineTension: 0.4;
+						},
+						{label: 'temperature',
+						backgroundColor: "rgba(215,63,9,0.5)",
+						data: []
+						//trying to figure out where this goes
+						//lineTension: 0.4;
+						},
+					
+						{label: 'heater temp',
+						backgroundColor: "rgba(215,63,9,0.5)",
+						data: []
+						//trying to figure out where this goes
+						//lineTension: 0.4;
+						}
+					]	
+				},
+				options: {
+					layout: {
+						padding: {
+							left: 100,
+							right: 100,
+							top: 0,
+							bottom: 100
+						}
+					}
+				}
+				});
+			</script>
+
+
+		<script>
+			//make this variable global so it can be modified by the buttons
+			var tree_id = "1";
+			var tree_datatype = "Sapflow";
+			var old = "Sapflow";
+			//add paramter to select which dataset to update
+			function addData(chart, x_points, data) {
+				chart.data.labels.push(x_points);
+				chart.data.datasets.forEach((dataset) => {
+					dataset.data.push(data);
+				});
+				myChart.update();
+				}
+
+			function removeData(chart) {
+				//chart.data.labels.pop();
+				//chart.data.datasets.forEach((dataset) => {
+				//	dataset.data.pop(data);
+				//});
+				chart.data.labels.shift();
+				chart.data.datasets.forEach((dataset) => {
+					dataset.data.shift();
+				});
+				myChart.update();
+				}
+			function getData(get_call) {
+				var max_data_points = 100;
+				var id_call = "?id=";
+				var points_call = "?pts=";
+				var points_left = max_data_points - myChart.data.labels.length;
+				var date_call = "?most_recent=";
+				var type_call = "?type=";
+				var most_recent_date = myChart.data.labels[myChart.data.labels.length - 1]; 
+				var return_call = get_call.concat(id_call, tree_id, points_call,points_left,type_call,tree_datatype); 	
+				return_call = return_call.concat(date_call,most_recent_date);
+				//document.write(return_call);
+						// for some reason all data is removed and re-inserted EVERY time
+						// I think the server side date comparason isn't working, since the date is being
+						// sent correctly...
+				var xhttp = new XMLHttpRequest();
+				//this is called 4 times, once for each transisition
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						//pass key value pairs to variable
+						var graph;
+						var database;
+						if (this.responseText.length > 50) {
+						var response_JSON = JSON.parse(this.responseText);
+						var database = new Date (response_JSON.time[0]);
+						graph = new Date(myChart.data.labels[myChart.data.labels.length - 1]);
+						if (old != tree_datatype) {
+							//remove all the others, add data back in
+							switch(tree_datatype) {
+								case 'Sapflow':
+									for (var ac_index = max_data_points; ac_index >= 0; ac_index--) {
+										removeData(myChart);
+										addData(myChart,response_JSON.time[ac_index],response_JSON.sapflow[ac_index]);
+									}
+									break;
+								case 'maxtemp':
+									for (var ac_index = max_data_points; ac_index >= 0; ac_index--) {
+										removeData(myChart);
+										addData(myChart,response_JSON.time[ac_index],response_JSON.maxtemp[ac_index]);
+									}
+									break;
+								case 'temperature':
+									for (var ac_index = max_data_points; ac_index >= 0; ac_index--) {
+										removeData(myChart);
+										addData(myChart,response_JSON.time[ac_index],response_JSON.temperature[ac_index]);
+									}
+									break;
+							}
+						old = tree_datatype;
+						}
+						if (isNaN(graph)) {
+							for (var ac_index = max_data_points; ac_index >= 0; ac_index--) {
+								/*
+								   //not sure why I had this remove here? if the first entry is nan, there shouldn't be anything....
+								if (myChart.data.labels.length > max_data_points) {
+									removeData(myChart);
+								}
+								*/
+								//should have only returned the correct number of elements
+								if (tree_datatype == "Sapflow") {
+									addData(myChart,response_JSON.time[ac_index],response_JSON.sapflow[ac_index]);
+								}
+								else if (tree_datatype == "maxtemp") {
+									addData(myChart,response_JSON.time[ac_index],response_JSON.maxtemp[ac_index]);
+								}
+								else if (tree_datatype == "temperature") {
+									addData(myChart,response_JSON.time[ac_index],response_JSON.temperature[ac_index]);
+								}
+							}
+						}
+						if (+graph !== +database) {
+							if (myChart.data.labels.length > max_data_points) {
+								removeData(myChart);
+							}
+							//should have only returned the correct number of elements
+							if (tree_datatype == "Sapflow") {
+							addData(myChart,response_JSON.time[0],response_JSON.sapflow[0]);
+							}
+							else if (tree_datatype == "maxtemp") {
+								addData(myChart,response_JSON.time[0],response_JSON.maxtemp[0]);
+							}
+							else if (tree_datatype == "temperature") {
+								addData(myChart,response_JSON.time[0],response_JSON.temperature[0]);
+						}
+					}
+				}
+					database = undefined;
+				}
+				}
+				xhttp.open("GET",return_call, true);
+				xhttp.send();
+			}
+
+			function turnoff_overlay(overlay) {
+				document.getElementById(overlay).style.display = "none";
+			}
+			function turnon_overlay(overlay) {
+				document.getElementById(overlay).style.display = "block";
+			}
+			function set_tree(tree_index) {
+				tree_id = tree_index;
+				//remove all data before adding the current data
+				var to_remove = myChart.data.labels.length;
+				for (var i = 0; i < to_remove; i++) {
+					removeData(myChart);
+				}
+				//get data from the fresh tree
+				insert = "sapflow_getdata.php";
+				getData(insert);
+				var tree_mssg = "Tree ";
+				tree_mssg = tree_mssg.concat(tree_index);
+				document.getElementById("status").innerHTML = tree_mssg;
+			}
+			
+			function set_datatype(input) {
+				tree_datatype = input;
+				insert = "sapflow_getdata.php";
+				getData(insert);
+			}
+			
+			</script>
+
+	<script>
+	</script>
+	<script>
+	insert = "sapflow_getdata.php";
+	getData(insert);
+	setInterval(getData, 3000,insert);
+	</script>
+	</body>
