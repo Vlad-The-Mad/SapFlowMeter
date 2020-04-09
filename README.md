@@ -19,4 +19,8 @@ This branch controls the basestation which collects and stores data from multipl
 - [ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
 - [FeatherFault](https://github.com/OPEnSLab-OSU/FeatherFault)
 - [ASF core](https://github.com/adafruit/Adafruit_ASFcore.git) commit f6ffa8b
-- [Chart.js]()
+## Basestation Branch
+- [Chart.js](https://github.com/chartjs/Chart.js)
+- [CircuitPython](https://github.com/adafruit/Adafruit_Blinka)
+- [Rasberry Pi GPIO](https://pypi.org/project/RPi.GPIO/)
+- [Twurl](https://github.com/twitter/twurl)
