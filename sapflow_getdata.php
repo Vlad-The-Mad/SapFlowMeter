@@ -9,7 +9,7 @@
 
 
 //establish connection to database
-require_once '../tree_capstone_files/pdo_connect.php';
+require_once '../server_code/SapFlowMeter/pdo_connect.php';
 try {
 	//get latest set of data
 	//might keep timestamp? IDK

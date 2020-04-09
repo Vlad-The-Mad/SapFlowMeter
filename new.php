@@ -1,7 +1,7 @@
 <?php
 
 //include 'pdo_connect.php';
-require_once '../tree_capstone_files/pdo_connect.php';
+require_once '../server_code/SapFlowMeter/pdo_connect.php';
 	echo "start";
 	if ($_GET["flow"]) {
 		$stmt = $pdo->prepare('INSERT INTO sap (Timestamp, flow, weight, temperature, time, id, maxtemp) VALUES (now(), ?, ?, ?, ?, ?, ?)');
