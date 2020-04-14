@@ -1,5 +1,5 @@
 <?php
-$dsn = "mysql:host=localhost;dbname=sapflow_pi_mysql;charset=utf8mb4"
+$dsn = "mysql:host=localhost;dbname=sapflow;charset=utf8mb4";
 $options = [
 	PDO::ATTR_EMULATE_PREPARES => false,
 	PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

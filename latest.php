@@ -22,7 +22,7 @@ parent::current(). "</td>";
 }
 
 	//include 'pdo_connect.php';
-require_once '../sever_code/SapFlowMeter/pdo_connect.php';
+require_once './pdo_connect.php';
 
 try {
 		$stmt = $pdo->prepare('SELECT * FROM sap order by MeasurementID desc'
