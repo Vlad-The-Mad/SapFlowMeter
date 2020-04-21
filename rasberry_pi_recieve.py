@@ -17,10 +17,13 @@ import adafruit_rfm9x
 # Import JSON module
 import json
 # Import Circuit Python Requests modules
-import adafruit_requests as requests
+#import adafruit_requests as requests
+import requests
 # Import python mysql connector
 import mysql.connector
 
+
+# Set up button A just in case we want to use it later
 # Button A
 btnA = DigitalInOut(board.D5)
 btnA.direction = Direction.INPUT
@@ -66,23 +69,41 @@ while True:
     if packet is None:
         display.show()
         display.text('- Waiting for PKT -', 15, 20, 1)
+
+        # TESTING PARAGRAPH
+        #scrubbed_text = '{"weight":"yourmom", "temp":"9001", "time":"24:24", "id":"0", "flow":"112", "maxtemp":"42.0"}'
+        #des_packet = json.loads(scrubbed_text)
+        #print(des_packet)
+        #r=requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php", params=des_packet)
+        #print(r.url)
+        #command = "INSERT INTO sap (Timestamp, flow, weight, temperature, time, id, maxtemp) VALUES (now(),%s,%s,%s,%s,%s,%s)" 
+        #values = ("0","0","0","24:24","0","0")
+        #db_cursor.execute(command,values)
+        #mysapflow.commit() 
+        #time.sleep(10)
+
     else:
         # Display the packet text and rssi
         display.fill(0)
         prev_packet = packet
         packet_text = str(prev_packet, "utf-8")
-        find_char = "}"
-        
-        remove_end = 89 - packet_text.find(find_char)
-        scrubbed_text = packet_text[:-remove_end]
+        # display text
         display.text('RX: ', 0, 0, 1)
         display.text(packet_text, 25, 0, 1)
+
+        # Parse text correctly - remove extra chars at the end and format to JSON
+        find_char = "}"
+        remove_end = 89 - packet_text.find(find_char)
+        scrubbed_text = packet_text[:-remove_end]
+        # scrubbed_text = '{"weight":"yourmom", "temp":"9001", "time":"24:24", "id":"0", "flow":"112", "maxtemp":"42.0"}'
         des_packet = json.loads(scrubbed_text)
         print(des_packet)
-
+        
         # Send packet to remote server
-        #requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php",weight=des_packet["weight"],temp=des_packet["temp"],time=des_packet["time"],id=des_packet["id"],flow=des_packet["flow"],maxtemp=des_packet["maxtemp"])
-        # requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php")
+        requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php",weight=des_packet["weight"],temp=des_packet["temp"],time=des_packet["time"],id=des_packet["id"],flow=des_packet["flow"],maxtemp=des_packet["maxtemp"])
+        r=requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php", params=des_packet)
+        print(r.url)
+
 
         # Log packet locally
         command = "INSERT INTO sap (Timestamp, flow, weight, temperature, time, id, maxtemp) VALUES (now(),%s,%s,%s,%s,%s,%s)" 
