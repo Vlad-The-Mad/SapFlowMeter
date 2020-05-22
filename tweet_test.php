@@ -1,7 +1,7 @@
-Tweets menu should allow 
-	1. Setting when/if tweeting occurs
-	2. Which trees will tweet
-	3. If only alerts should tweet
+#Tweets menu should allow 
+#	1. Setting when/if tweeting occurs
+#	2. Which trees will tweet
+#	3. If only alerts should tweet
 
 
 <?php

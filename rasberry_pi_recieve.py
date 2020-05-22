@@ -1,9 +1,6 @@
-"""
-Example for using the RFM9x Radio with Raspberry Pi.
+# Main script for recieving transmissions from Smartprobes.  Logs entries both locally and remotely.
+# Be sure to run using python3!
 
-Learn Guide: https://learn.adafruit.com/lora-and-lorawan-for-raspberry-pi
-Author: Brent Rubell for Adafruit Industries
-"""
 # Import Python System Libraries
 import time
 # Import Blinka Libraries
@@ -22,12 +19,11 @@ import requests
 # Import python mysql connector
 import mysql.connector
 
-
-# Set up button A just in case we want to use it later
+# Buttons could be used for say, a reset
 # Button A
-btnA = DigitalInOut(board.D5)
-btnA.direction = Direction.INPUT
-btnA.pull = Pull.UP
+# btnA = DigitalInOut(board.D5)
+# btnA.direction = Direction.INPUT
+# btnA.pull = Pull.UP
 
 # Create the I2C interface.
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -60,18 +56,19 @@ db_cursor = mysapflow.cursor()
 
 while True:
     packet = None
-    # draw a box to clear the image
+    # draw a box to clear the LCD
     display.fill(0)
     display.text('RasPi LoRa', 35, 0, 1)
 
-    # check for packet rx
+    # check for packet recpection
     packet = rfm9x.receive()
     if packet is None:
         display.show()
         display.text('- Waiting for PKT -', 15, 20, 1)
 
         # TESTING PARAGRAPH
-        #scrubbed_text = '{"weight":"yourmom", "temp":"9001", "time":"24:24", "id":"0", "flow":"112", "maxtemp":"42.0"}'
+	#scrubbed text is a test sequence used when you don't want to set up a Feather to send a message
+        scrubbed_text = '{"weight":"yourmom", "temp":"9001", "time":"24:24", "id":"0", "flow":"112", "maxtemp":"42.0"}'
         #des_packet = json.loads(scrubbed_text)
         #print(des_packet)
         #r=requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php", params=des_packet)
@@ -86,21 +83,26 @@ while True:
         # Display the packet text and rssi
         display.fill(0)
         prev_packet = packet
-        packet_text = str(prev_packet, "utf-8")
+        print(prev_packet)
+        # packet_text = str(prev_packet, "utf-8")
+        # prev_packet = bytes('abcdeabcde\x00\x912\x00\r+\xd1\x91u\xbc\x00',encoding='utf-8')
+        packet_text = str(prev_packet,encoding='utf-8',errors='replace')
         # display text
         display.text('RX: ', 0, 0, 1)
-        display.text(packet_text, 25, 0, 1)
+        # display.text(packet_text, 25, 0, 1)
 
         # Parse text correctly - remove extra chars at the end and format to JSON
         find_char = "}"
-        remove_end = 89 - packet_text.find(find_char)
+        remove_end = len(packet_text) - packet_text.find(find_char) - 1
+        print(packet_text)
         scrubbed_text = packet_text[:-remove_end]
+        print(scrubbed_text)
         # scrubbed_text = '{"weight":"yourmom", "temp":"9001", "time":"24:24", "id":"0", "flow":"112", "maxtemp":"42.0"}'
         des_packet = json.loads(scrubbed_text)
         print(des_packet)
         
         # Send packet to remote server
-        requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php",weight=des_packet["weight"],temp=des_packet["temp"],time=des_packet["time"],id=des_packet["id"],flow=des_packet["flow"],maxtemp=des_packet["maxtemp"])
+        #requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php",weight=des_packet["weight"],temp=des_packet["temp"],time=des_packet["time"],id=des_packet["id"],flow=des_packet["flow"],maxtemp=des_packet["maxtemp"])
         r=requests.get("http://web.engr.oregonstate.edu/~veselyv/new.php", params=des_packet)
         print(r.url)
 
@@ -112,15 +114,6 @@ while True:
         mysapflow.commit() 
 
         time.sleep(1)
-
-#    if not btnA.value:
-       # Send Button A
-#        display.fill(0)
-#        button_a_data = bytes("Button A!\r\n","utf-8")
-#        rfm9x.send(button_a_data)
-#        display.text('Sent Button A!', 25, 15, 1)
-#    elif not btnB.value:
-
 
     display.show()
     time.sleep(0.1)
